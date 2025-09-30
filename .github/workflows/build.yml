@@ -252,6 +252,22 @@ jobs:
           echo "CONFIG_TMPFS_XATTR=y" >> "$defconfig"
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$defconfig"
           
+          #perf stuff
+          echo "CONFIG_HZ=500" >> "$defconfig"
+          echo "CONFIG_NO_HZ_FULL=y" >> "$defconfig"
+          echo "CONFIG_PREEMPT=y" >> "$defconfig"
+          echo "CONFIG_UCLAMP_TASK=y" >> "$defconfig"
+          echo "CONFIG_SCHED_MC=y" >> "$defconfig"
+          echo "CONFIG_BPF_SYSCALL=y" >> "$defconfig"
+          echo "CONFIG_BPF_JIT=y" >> "$defconfig"
+          echo "CONFIG_PSI=y" >> "$defconfig"
+          echo "CONFIG_LRU_GEN=y" >> "$defconfig"
+          echo "CONFIG_CONSOLE_LOGLEVEL_QUIET=4" >> "$defconfig"
+          echo "CONFIG_CGROUP_BPF=y" >> "$defconfig"
+          echo "CONFIG_NET_CLS_BPF=y" >> "$defconfig"
+          echo "CONFIG_NET_ACT_BPF=y" >> "$defconfig"
+          echo "CONFIG_FUSE_BPF=y" >> "$defconfig"
+          
           # Networking Configuration
           echo "CONFIG_IP_NF_TARGET_TTL=y" >> "$defconfig"
           echo "CONFIG_IP6_NF_TARGET_HL=y" >> "$defconfig"
@@ -293,13 +309,13 @@ jobs:
           
           # SUSFS Advanced Features
           echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> "$defconfig"
-          echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> "$defconfig"
+          echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$defconfig"
           
           # SUSFS Debugging and Security
-          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> "$defconfig"
+          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=n" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$defconfig"
           
