@@ -90,7 +90,7 @@ jobs:
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b "$SUSFS_BRANCH"
           git clone https://github.com/WildKernels/kernel_patches.git
 
-      - name: Initialize and Sync Kernel Source
+   - name: Initialize and Sync Kernel Source
         run: |
           mkdir -p "$CONFIG"
           cd "$CONFIG"
@@ -252,22 +252,6 @@ jobs:
           echo "CONFIG_TMPFS_XATTR=y" >> "$defconfig"
           echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$defconfig"
           
-          #perf stuff
-          echo "CONFIG_HZ=500" >> "$defconfig"
-          echo "CONFIG_NO_HZ_FULL=y" >> "$defconfig"
-          echo "CONFIG_PREEMPT=y" >> "$defconfig"
-          echo "CONFIG_UCLAMP_TASK=y" >> "$defconfig"
-          echo "CONFIG_SCHED_MC=y" >> "$defconfig"
-          echo "CONFIG_BPF_SYSCALL=y" >> "$defconfig"
-          echo "CONFIG_BPF_JIT=y" >> "$defconfig"
-          echo "CONFIG_PSI=y" >> "$defconfig"
-          echo "CONFIG_LRU_GEN=y" >> "$defconfig"
-          echo "CONFIG_CONSOLE_LOGLEVEL_QUIET=4" >> "$defconfig"
-          echo "CONFIG_CGROUP_BPF=y" >> "$defconfig"
-          echo "CONFIG_NET_CLS_BPF=y" >> "$defconfig"
-          echo "CONFIG_NET_ACT_BPF=y" >> "$defconfig"
-          echo "CONFIG_FUSE_BPF=y" >> "$defconfig"
-          
           # Networking Configuration
           echo "CONFIG_IP_NF_TARGET_TTL=y" >> "$defconfig"
           echo "CONFIG_IP6_NF_TARGET_HL=y" >> "$defconfig"
@@ -295,20 +279,6 @@ jobs:
           echo "CONFIG_IP_SET_HASH_NETNET=y" >> "$defconfig"
           echo "CONFIG_IP_SET_HASH_NETPORT=y" >> "$defconfig"
           echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> "$defconfig"
-      
-          # Add Snapdragon-specific optimizations
-          echo "CONFIG_QCOM_KRYO_L2_ACCESSORS=y" >> "$defconfig"
-          echo "CONFIG_QCOM_DVFS=y" >> "$defconfig"
-          echo "CONFIG_ARM64_BTI_KERNEL=y" >> "$defconfig"
-          echo "CONFIG_SCHED_CLUSTER=y" >> "$defconfig"
-          echo "CONFIG_QCOM_DCC=y" >> "$defconfig"
-          echo "CONFIG_QCOM_LLCC=y" >> "$defconfig"
-          echo "CONFIG_QCOM_HEXAGON=y" >> "$defconfig"
-          echo "CONFIG_QCOM_SMD_RPM=y" >> "$defconfig"
-          echo "CONFIG_PCI_MSM=y" >> "$defconfig"
-          echo "CONFIG_QCOM_BAM_DMA=y" >> "$defconfig"
-          echo "CONFIG_SCHED_MC_CORE=y" >> "$defconfig"
-
           # SUSFS Configuration
           echo "CONFIG_KSU_SUSFS=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> "$defconfig"
@@ -329,15 +299,15 @@ jobs:
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$defconfig"
           
           # SUSFS Debugging and Security
-          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=n" >> "$defconfig"
+          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$defconfig"
           
           # Build Optimization Configuration
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$defconfig"
           echo "CONFIG_LTO_CLANG=y" >> "$defconfig"
-          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n" >> "$defconfig"
-          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=y" >> "$defconfig"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$defconfig"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=n" >> "$defconfig"
           
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./common/build.config.gki
@@ -378,10 +348,9 @@ jobs:
           cd "$CONFIG"
           echo "Building the kernel..."
           if [ -f "build/build.sh" ]; then
-            export EXTRA_KCFLAGS="${{ env.OPT_FLAGS }}"
             LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh || exit 1
           else
-            tools/bazel build --config=fast --lto=thin --copt="${{ env.OPT_FLAGS }}" //common:kernel_aarch64_dist || exit 1
+            tools/bazel build --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
           fi
 
       - name: Detect Clang Version from Configs
@@ -424,10 +393,7 @@ jobs:
           echo "CLANG_VERSION=$CLANG_VERSION" >> $GITHUB_ENV
           echo "CLANG_BIN_PATH=$CLANG_BIN_PATH" >> $GITHUB_ENV
 
-      - name: Set Optimization Flags
-        run: |
-          echo "OPT_FLAGS=-march=armv8.6-a -mtune=cortex-x3" >> $GITHUB_ENV
-            
+
       - name: Build Kernel
         if: ${{ matrix.build_type == 'make' }}
         run: |
