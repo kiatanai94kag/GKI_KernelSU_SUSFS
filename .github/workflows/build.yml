@@ -90,7 +90,7 @@ jobs:
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b "$SUSFS_BRANCH"
           git clone https://github.com/WildKernels/kernel_patches.git
 
-   - name: Initialize and Sync Kernel Source
+      - name: Initialize and Sync Kernel Source
         run: |
           mkdir -p "$CONFIG"
           cd "$CONFIG"
@@ -444,8 +444,8 @@ jobs:
             MAKE_ARGS="LLVM_IAS=1 $MAKE_ARGS"
           fi
           
-          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O3 -flto=thin -fno-stack-protector -march=armv8.6-a -mtune=cortex-x3" gki_defconfig Image Image.gz Image.lz4 || exit 1
-          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O3 -flto=thin -fno-stack-protector -march=armv8.6-a -mtune=cortex-x3" || exit 1
+          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O3 -flto=thin -fno-stack-protector" gki_defconfig Image Image.gz Image.lz4 || exit 1
+          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O3 -flto=thin -fno-stack-protector" || exit 1
 
       - name: Create AK3 ZIP
         run: |
