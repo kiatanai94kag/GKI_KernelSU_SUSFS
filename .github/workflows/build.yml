@@ -219,7 +219,7 @@ jobs:
           fi
 
       - name: Fix WiFi and Bluetooth on Samsung 6.6 GKI devices
-        if: ${{ ( inputs.kernel_version == '6.6' ) }}
+        if: ${{ ( inputs.kernel_version == '5.15' ) }}
         run: |
           SYMBOL_LIST=$CONFIG/common/android/abi_gki_aarch64_galaxy
           echo "kdp_set_cred_non_rcu" >> $SYMBOL_LIST
@@ -279,6 +279,7 @@ jobs:
           echo "CONFIG_IP_SET_HASH_NETNET=y" >> "$defconfig"
           echo "CONFIG_IP_SET_HASH_NETPORT=y" >> "$defconfig"
           echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> "$defconfig"
+          
           # SUSFS Configuration
           echo "CONFIG_KSU_SUSFS=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> "$defconfig"
@@ -299,15 +300,15 @@ jobs:
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$defconfig"
           
           # SUSFS Debugging and Security
-          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> "$defconfig"
+          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=n" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> "$defconfig"
           echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> "$defconfig"
           
           # Build Optimization Configuration
           echo "CONFIG_LTO_CLANG_THIN=y" >> "$defconfig"
           echo "CONFIG_LTO_CLANG=y" >> "$defconfig"
-          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> "$defconfig"
-          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=n" >> "$defconfig"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n" >> "$defconfig"
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3=y" >> "$defconfig"
           
           # Remove check_defconfig
           sed -i 's/check_defconfig//' ./common/build.config.gki
@@ -444,8 +445,8 @@ jobs:
             MAKE_ARGS="LLVM_IAS=1 $MAKE_ARGS"
           fi
           
-          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O3 -flto=thin -fno-stack-protector" gki_defconfig Image Image.gz Image.lz4 || exit 1
-          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O3 -flto=thin -fno-stack-protector" || exit 1
+          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O3 -march=armv8.6-a -flto=thin -fno-stack-protector" gki_defconfig Image Image.gz Image.lz4 || exit 1
+          make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O3 -march=armv8.6-a -flto=thin -fno-stack-protector" || exit 1
 
       - name: Create AK3 ZIP
         run: |
